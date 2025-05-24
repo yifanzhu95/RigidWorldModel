@@ -1,0 +1,116 @@
+save_dir: &save_dir './checkpoints/drill1/'
+temp_folder: *save_dir 
+task_name_stage_1: 'drill_stage_1'
+project_name: 'Rigid_world_model'
+
+# training settings
+save_every: 2 
+init_frictions: [1.0, 0.5, 1.0]
+init_masses: [1.0, 0.8, 1.0]
+min_mass: 0.1
+min_fric: 0.1
+optimizable_phy_param: None # Do not optimize physical parameters in stage 1
+optimizable_phy_ids: [1]
+optimize_color: True
+optimize_terrain_color: True
+color_representation: 'point_color'
+optimize_geometry: True
+pytorch3d_color_renderer: 'mesh'
+finetune_color_grid_epoch: 100
+pytorch3d_point_size: 0.015
+initial_geometry_voxel_downasample_size: 0.0025
+reset_obj_pos: False 
+time_of_contact_diff: True
+no_time_halving: False
+time_halving_max_count: 0
+collision_detection_padding: 0.
+lambda_dssim: 0.2
+lambda_dssim_depth: 0 
+static_balance_sim_steps: 3 
+
+# weights
+depth_weight: 50000. 
+rgb_weight: 10.
+chamfer_weight: 2000
+smooth_reg: 4000.
+sap_reg: 1.
+static_balance_weight: 100.
+
+# data settings
+stage_1_data_folder: data/drill/train1/
+stage_1_zarr_name: train1.zarr
+stage_1_epochs: 30
+
+shape_completion_fn: ./asset/initial_geometries/drill_tripoSR.ply
+background_idx: 0
+rigid_object_idx: 1
+image_width: 1024
+image_height: 720
+pcd_downsample_rate_stage_1: 1.
+pcd_completion_method: None
+
+# solver settings
+solver_max_iter: 6
+solver_verbose: -1
+solver_eps: 0.000000000001 #0.0001
+
+# simulator settings
+dt: 0.01
+stabilization_coeff: 0.01 
+contact_eps: 0.004 
+contact_callback: SaPMeshDiffContactHandler
+N_contact_cluster: 10 
+contact_cluster_grid_size: 0.02 
+SaP_grid_res: 128
+SaP_apply_sigmoid: True
+SaP_normal_normalize: False
+SaP_psr_sigma: 2
+mc_stepsize: 1 
+norm_padding: 0.0001 
+
+# lrs
+PhyLearningRateSchedule: 
+  -
+    Type: Step
+    Initial: 0.1
+    Interval: 20
+    Factor: 0.8
+    Final: 0.02
+
+ComLearningRateSchedule: 
+  -
+    Type: Step
+    Initial: 0.1
+    Interval: 20
+    Factor: 0.8
+    Final: 0.02
+ScaleLearningRateSchedule:
+  -
+    Type: Step
+    Initial: 0.1
+    Interval: 2
+    Factor: 0.8
+    Final: 0.0005 
+
+SaPLearningRateSchedule: 
+  -
+    Type: Step
+    Initial: 0.01
+    Interval: 5 #10
+    Factor: 0.8
+    Final: 1e-5
+
+ColorLearningRateSchedule: 
+  -
+    Type: Step
+    Initial: 0.1
+    Interval: 2 
+    Factor: 0.8
+    Final: 1e-4
+ColorTerrainLearningRateSchedule: 
+  -
+    Type: Step
+    Initial: 0.01
+    Interval: 5 
+    Factor: 0.8
+    Final: 1e-4
