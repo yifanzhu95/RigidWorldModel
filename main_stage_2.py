@@ -143,10 +143,7 @@ with torch.autograd.set_detect_anomaly(True):
         # convert pybullet depth to actually units
         near, far = stage_2_data.get_near_far_planes()
         gt_depth = far * near / (far - (far - near) *gt_depth)
-        if configs['color_representation'] == 'point_color':
-            cam = convert_camera_pytorch3D(0, viewMatrix, projection_matrix, gt_rgb, device, near, far, fovy*180/np.pi)
-        elif configs['color_representation'] == 'GS':
-            cam = convert_camera(0, viewMatrix, fovx, fovy, torch.from_numpy(gt_rgb), device)
+        cam = convert_camera_pytorch3D(0, viewMatrix, projection_matrix, gt_rgb, device, near, far, fovy*180/np.pi)
     
         rgb, depth, obj_mask, _ = world.render(cam, background, device)
         if configs['color_representation'] == 'point_color':
